@@ -13,7 +13,7 @@ const securePassword=async(password)=>{
 }
 const createToken=async(id)=>{
     try {
-        const token = await jwt.sign({ _id: id }, config.secrect_key, { expiresIn: "1h" });
+        const token = await jwt.sign({ _id: id }, config.secrect_key, { expiresIn: "30s" });
         return token;
     } catch (error) {
         // res.status(400).send(error.message);
@@ -43,11 +43,39 @@ const create=async(req,res)=>{
         }
     }catch (error) {
         return res.status(400).json(error.message);
-       // console.log(error.message);
     }
 
 }
 
+
+const login=async(req,res)=>{
+    try {
+        // Get user input
+        const { email, password } = req.body;
+
+        // Validate user input
+        if (!(email && password)) {
+           return res.status(400).json("All input is required");
+        }
+        // Validate if user exist in our database
+        const user = await User.findOne({ email });
+
+        if (user && (await bcrypt.compare(password, user.password))) {
+            // Create token
+            const tokendata = await createToken(user._id)
+            // user
+            return  res.status(200).json({success:true,"msg":"login successfully", "user": user, "token": tokendata });
+        }
+        return res.status(400).json("Invalid Credentials");
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const test = (req, res) => {
+    return res.status(201).json({ success: true, msg: "Welcome 🙌 Your are Authenticate user" })
+}
+
 module.exports={
-    create
+    create,login,test
 }

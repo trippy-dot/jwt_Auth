@@ -29,11 +29,14 @@ const storage = multer.diskStorage({
 });
 //define uploaded storage path
 const upload = multer({ storage: storage });
-
-//const auth = require('../middleware/auth')
+const auth = require('../middleware/auth')
 
 //define url route
 Route.post('/register', upload.single('image'),HomeController.create);
+Route.post('/login',HomeController.login);
+Route.get('/test',auth,HomeController.test);
+
+
 
 
 module.exports=Route;
