@@ -35,6 +35,7 @@ const auth = require('../middleware/auth')
 Route.post('/register', upload.single('image'),HomeController.create);
 Route.post('/login',HomeController.login);
 Route.get('/test',auth,HomeController.test);
+Route.post('/updatepassword',auth,HomeController.updatepassword);
 
 
 

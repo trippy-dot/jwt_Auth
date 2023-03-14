@@ -13,7 +13,7 @@ const securePassword=async(password)=>{
 }
 const createToken=async(id)=>{
     try {
-        const token = await jwt.sign({ _id: id }, config.secrect_key, { expiresIn: "30s" });
+        const token = await jwt.sign({ _id: id }, config.secrect_key, { expiresIn: "30m" });
         return token;
     } catch (error) {
         // res.status(400).send(error.message);
@@ -76,6 +76,32 @@ const test = (req, res) => {
     return res.status(201).json({ success: true, msg: "Welcome 🙌 Your are Authenticate user" })
 }
 
+const updatepassword = async(req,res)=>{
+    try {
+        const user_id = req.body.user_id;
+        const password = req.body.password;
+
+        //check userid exist ir not
+        const data = await User.findOne({ _id: user_id });
+        if (data) {
+            const newPassword = await securePassword(password);
+            const userData = await User.findByIdAndUpdate({ _id: user_id }, {
+                $set: {
+                    password: newPassword
+                }
+            })
+
+            res.status(201).send({ success: true, "msg": "your password hasbeen updated" });
+        } else {
+            res.status(400).send({ succses: false, "msg": "user id Not found" })
+        }
+
+    } catch (error) {
+        res.status(400).send(error, message)
+    }
+
+}
+
 module.exports={
-    create,login,test
+    create,login,test,updatepassword
 }
